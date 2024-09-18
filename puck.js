@@ -34,7 +34,7 @@ var normalize = function(x) {
 // evaluates the model based on the current window
 var evaluate = function() {
   for(var i = 0; i < 20; i++) {
-    Infxl.insert(i,window[i][0],que[i][1],que[i][2]);
+    Infxl.insert(i,window[i][0],window[i][1],window[i][2]);
   }
   return Infxl.model();
 };
@@ -58,7 +58,7 @@ Puck.on('accel', function(data) {
       console.log(evaluate());
     }
   } else {
-    i = (i + 1) % 20;
+    i = (i + 1) % 20; // still need to track some index for stride
     window.shift(); // O(n) operation bad -> LL ? space : time
     window.push([x,y,z]);
     if(newWindow()) {
