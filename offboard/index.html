@@ -40,7 +40,7 @@
 }
 
 	function getData() {
-		UART.eval('dumpData()', function(response) {
+		UART.eval('Puck.accel()', function(response) {
 			document.getElementById("sensordata").value = response;
 			var data = extractDataFromResponse(response);
 			makeChart(data);
