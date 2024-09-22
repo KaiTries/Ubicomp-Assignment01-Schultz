@@ -58,7 +58,7 @@ Puck.on('accel', function(data) {
     }
   } else {
     i = (i + 1) % 20; // still need to track some index for stride
-    window.shift(); // O(n) operation bad -> LL ? space : time
+    window.shift(); // O(n) operation bad -> space > time ? array : linked-list
     window.push([x,y,z]);
     if(newWindow()) {
     console.log(evaluate());
