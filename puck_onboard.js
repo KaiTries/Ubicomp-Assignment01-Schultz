@@ -8,7 +8,7 @@ Feeds accelerometer data into pretrained neural network
 Variable
 */
 var start = false; // need to get initial 20 readings
-var strideLength = 5; // sliding window size (1 - 20) -> how often to call model
+var strideLength = 1; // sliding window size (1 - 20) -> how often to call model
 var i = 0; // holds current position in window (0 -19)
 var x = 0; // holds normalized x reading
 var y = 0; // holds normalized y reading
@@ -44,7 +44,6 @@ var newWindow = function() {
   return i % strideLength == 0;
 };
 
-
 // function to be run on accelerometer input
 Puck.on('accel', function(data) {
   x = normalize(data.acc.x);
@@ -65,7 +64,6 @@ Puck.on('accel', function(data) {
     console.log(evaluate());
     }
   }
-
 });
 
 /*
@@ -95,4 +93,4 @@ Puck.on('accel', function(data) {
 /*
 program
 */
-Puck.accelOn(12.5);
+Puck.accelOn(12.5); // default is 12.5 either way so can leave empty
