@@ -2,8 +2,6 @@
 Feeds accelerometer data into pretrained neural network
 */
 
-
-
 /*
 Variable
 */
@@ -20,48 +18,46 @@ var maxInt = 127; // max expected value in model
 
 var window = [20]; // actual window
 
-
 /*
 functions 
 */
 
-
 // normalizes the given value to a valid integer
-var normalize = function(x) {
-  return parseInt(minInt + (x - min) * (maxInt - minInt) / (max - min));
+var normalize = function (x) {
+  return parseInt(minInt + ((x - min) * (maxInt - minInt)) / (max - min));
 };
 
 // evaluates the model based on the current window
-var evaluate = function() {
-  for(var i = 0; i < 20; i++) {
-    Infxl.insert(i,window[i][0],window[i][1],window[i][2]);
+var evaluate = function () {
+  for (var i = 0; i < 20; i++) {
+    Infxl.insert(i, window[i][0], window[i][1], window[i][2]);
   }
   return Infxl.model();
 };
 
 // checks if model should be evaluated again
-var newWindow = function() {
+var newWindow = function () {
   return i % strideLength == 0;
 };
 
 // function to be run on accelerometer input
-Puck.on('accel', function(data) {
+Puck.on("accel", function (data) {
   x = normalize(data.acc.x);
   y = normalize(data.acc.y);
   z = normalize(data.acc.z);
-  if(!start) {
-    window[i] = ([x,y,z]);
+  if (!start) {
+    window[i] = [x, y, z];
     i = (i + 1) % 20;
-    if(i==0){
+    if (i == 0) {
       start = true;
       console.log(evaluate());
     }
   } else {
     i = (i + 1) % 20; // still need to track some index for stride
     window.shift(); // O(n) operation bad -> space > time ? array : linked-list
-    window.push([x,y,z]);
-    if(newWindow()) {
-    console.log(evaluate());
+    window.push([x, y, z]);
+    if (newWindow()) {
+      console.log(evaluate());
     }
   }
 });
