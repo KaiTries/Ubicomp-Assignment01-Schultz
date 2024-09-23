@@ -48,7 +48,8 @@ function doClassification() {
       sensorData.push(z);
     }
     var result = classify(sensorData);
-    document.getElementById("result").value = "Prediction: " + result;
+
+    document.getElementById("result").innerText = "Prediction: " + result.indexOf(Math.max(...result));
   }
   return null;
 }
@@ -95,7 +96,7 @@ function receiveData() {
   if (UART.isConnected()) {
     gettingData = window.setInterval(function () {
       getData();
-    }, 500);
+    }, 100);
   }
 }
 function connect() {
