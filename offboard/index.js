@@ -36,7 +36,7 @@ function extractDataFromResponse(response) {
   }
 }
 
-function doClassification(data) {
+function doClassification() {
   if (dataX.length == 20) {
     var sensorData = [];
     for (var i = 0; i < 20; i++) {
@@ -53,7 +53,7 @@ function doClassification(data) {
   return null;
 }
 
-function makeChart(data) {
+function makeChart() {
   var trace = {
     x: dataX,
     y: dataY,
@@ -114,9 +114,9 @@ function getData() {
       accData.y +
       ", z: " +
       accData.z;
-    var data = extractDataFromResponse(accData);
-    makeChart(data);
-    doClassification(data);
+    extractDataFromResponse(accData);
+    makeChart();
+    doClassification();
   });
 }
 
