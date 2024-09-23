@@ -22,6 +22,12 @@ function extractDataFromResponse(response) {
     yReading = yReading == -0 ? 0 : yReading;
     zReading = zReading == -0 ? 0 : zReading;
 
+    if(dataX.length == 20) {
+      dataX.shift();
+      dataY.shift();
+      dataZ.shift();
+    }
+
     dataX.push(xReading);
     dataY.push(yReading);
     dataZ.push(zReading);
@@ -31,13 +37,20 @@ function extractDataFromResponse(response) {
 }
 
 function doClassification(data) {
-  if (dataX.length >= 20) {
+  if (dataX.length == 20) {
+    var sensorData = [];
     for (var i = 0; i < 20; i++) {
-      var x = dataX[dataX.length - 20 + i];
-      var y = dataY[dataY.length - 20 + i];
-      var z = dataZ[dataZ.lenght - 20 + i];
+      var x = dataX[i];
+      var y = dataY[i];
+      var z = dataZ[i];
+      sensorData.push(x);
+      sensorData.push(y);
+      sensorData.push(z);
     }
+    var result = classify(sensorData);
+    document.getElementById("result").value = "Prediction: " + result;
   }
+  return null;
 }
 
 function makeChart(data) {
