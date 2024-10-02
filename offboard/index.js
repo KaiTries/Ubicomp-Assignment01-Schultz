@@ -4,8 +4,8 @@ var dataZ = [];
 
 var gettingData;
 
-var min = -32768; // min reading value of accelerometer (puck.js)
-var max = 32768; // max reading value of acceleromter (puck.js)
+var min = -32768 / 2; // min reading value of accelerometer (puck.js)
+var max = 32768 / 2; // max reading value of acceleromter (puck.js)
 var minInt = -127; // min expected value in model
 var maxInt = 127; // max expected value in model
 
@@ -15,9 +15,9 @@ var normalize = function (x) {
 
 function extractDataFromResponse(response) {
   if (response != null) {
-    var xReading = normalize(response.x);
-    var yReading = normalize(response.y);
-    var zReading = normalize(response.z);
+    var xReading = normalize(Math.max(min,Math.min(max,response.x)));
+    var yReading = normalize(Math.max(min,Math.min(max,response.y)));
+    var zReading = normalize(Math.max(min,Math.min(max,response.z)));
     xReading = xReading == -0 ? 0 : xReading;
     yReading = yReading == -0 ? 0 : yReading;
     zReading = zReading == -0 ? 0 : zReading;
@@ -40,12 +40,9 @@ function doClassification() {
   if (dataX.length == 20) {
     var sensorData = [];
     for (var i = 0; i < 20; i++) {
-      var x = dataX[i];
-      var y = dataY[i];
-      var z = dataZ[i];
-      sensorData.push(x);
-      sensorData.push(y);
-      sensorData.push(z);
+      sensorData.push(dataX[i]);
+      sensorData.push(dataY[i]);
+      sensorData.push(dataZ[i]);
     }
     var result = classify(sensorData);
 
@@ -96,7 +93,7 @@ function receiveData() {
   if (UART.isConnected()) {
     gettingData = window.setInterval(function () {
       getData();
-    }, 100);
+    }, 50);
   }
 }
 function connect() {
