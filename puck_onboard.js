@@ -11,26 +11,34 @@ var i = 0; // holds current position in window (0 -19)
 var x = 0; // holds normalized x reading
 var y = 0; // holds normalized y reading
 var z = 0; // holds normalized z reading
-var min = -32768; // min reading value of accelerometer (puck.js)
-var max = 32768; // max reading value of acceleromter (puck.js)
+var min = -32768 / 2; // min reading value of accelerometer (puck.js) 4g / 2 => val for 2g
+var max = 32768 / 2; // max reading value of acceleromter (puck.js)
 var minInt = -127; // min expected value in model
 var maxInt = 127; // max expected value in model
 
-var window = [20]; // actual window
+var window = [60]; // actual window
 
 /*
 functions 
 */
+function shiftWindow(xVal, yVal, zVal) {
+    window.shift();
+    window.shift();
+    window.shift();
+    window.push(x);
+    window.push(y);
+    window.push(z);
+}
 
 // normalizes the given value to a valid integer
-var normalize = function (x) {
-  return parseInt(minInt + ((x - min) * (maxInt - minInt)) / (max - min));
+var normalize = function (numberToNormalise) {
+  return parseInt(minInt + ((numberToNormalise - min) * (maxInt - minInt)) / (max - min));
 };
 
 // evaluates the model based on the current window
 var evaluate = function () {
-  for (var i = 0; i < 20; i++) {
-    Infxl.insert(i, window[i][0], window[i][1], window[i][2]);
+  for (var idx = 0; idx < 20; idx++) {
+    Infxl.insert(idx, window[idx * 3], window[idx * 3 + 1], window[idx * 3 + 2]);
   }
   return Infxl.model();
 };
@@ -42,11 +50,13 @@ var newWindow = function () {
 
 // function to be run on accelerometer input
 Puck.on("accel", function (data) {
-  x = normalize(data.acc.x);
-  y = normalize(data.acc.y);
-  z = normalize(data.acc.z);
+  x = normalize(Math.max(min,Math.min(max,data.acc.x)));
+  y = normalize(Math.max(min,Math.min(max,data.acc.y)));
+  z = normalize(Math.max(min,Math.min(max,data.acc.z)));
   if (!start) {
-    window[i] = [x, y, z];
+    window[i * 3] = x;
+    window[i * 3 + 1] = y;
+    window[i * 3 + 2] = z;
     i = (i + 1) % 20;
     if (i == 0) {
       start = true;
@@ -54,39 +64,12 @@ Puck.on("accel", function (data) {
     }
   } else {
     i = (i + 1) % 20; // still need to track some index for stride
-    window.shift(); // O(n) operation bad -> space > time ? array : linked-list
-    window.push([x, y, z]);
+    shiftWindow(y,y,z);
     if (newWindow()) {
       console.log(evaluate());
     }
   }
 });
 
-/*
-// old function without sliding window
-// technically sliding window but new values do not get added as last index
-// they just cicle through 0 -19 so could conflict with model
-Puck.on('accel', function(data) {
-  x = normalize(data.acc.x);
-  y = normalize(data.acc.y);
-  z = normalize(data.acc.z);
 
-  Infxl.insert(i,x,y,z);
-  i = (i + 1)%20;
-  if(!start) {
-    if(i == 0) {
-      start = true;
-    }
-  } else {
-    if (i % strideLength == 0) {
-     console.log(Infxl.model());
-    }
-  }
-});
-
-*/
-
-/*
-program
-*/
 Puck.accelOn(12.5); // default is 12.5 either way so can leave empty
